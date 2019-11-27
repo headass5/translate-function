@@ -11,14 +11,13 @@ const translateNew = new Translate({projID});
 const languages = ['es', 'fr','de', "en"];
 
 // Translates language
-exports.translate = functions.https.onRequest(async (req, res) =>  {
+exports.translate = functions.https.onCall(async (data, res) =>  {
     
     // print original text
-    let text = req.body.originalText;    
+    let text = data.originalText;    
 
-    let fromLang = req.body.fromLanguage.toLowerCase();
+    let fromLang = data.fromLanguage.toLowerCase();
 
-    //add in key and translation
     let translations = {};
 
     // loops and prints out translated language
@@ -27,5 +26,6 @@ exports.translate = functions.https.onRequest(async (req, res) =>  {
         let [translation] = await translateNew.translate(text, {from: fromLang, to: language });
         translations[language] = translation;
     }
-    res.json(translations);
+    translations[fromLang] = text;
+    return translations;
 });
